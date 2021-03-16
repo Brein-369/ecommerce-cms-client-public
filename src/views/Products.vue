@@ -1,0 +1,421 @@
+<template>
+  <div class="home">
+    <Navbar></Navbar>
+    <div class="container">
+      <div class="title">
+        <h1>Products Admin</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <h4>Maintain Your Products Below</h4>
+        </div>
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
+          <div class="table-responsive">
+            <table class="table table-shopping">
+              <thead>
+                <tr>
+                  <th class="text-center"></th>
+                  <th>Product</th>
+                  <th class="text-center">Price</th>
+                  <th class="text-center">Qty</th>
+                  <th class="text-center">Action</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ProductItem v-for="item in allItems" :key="item.id"
+                :item = "item"
+                ></ProductItem>
+              </tbody>
+            </table>
+          </div>
+          <!-- Button trigger modal -->
+          <button class="btn btn-success mx-auto col-12"
+          data-toggle="modal" data-target="#modalBox">
+          <i class="material-icons">Add Product Here</i></button>
+          <!-- Modal -->
+          <div class="modal fade" id="modalBox" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body text-left">
+                  <label for="name">Name</label>
+                  <input type="text" class="form-control" id="name" v-model="nameInput" placeholder="Sepatu Adidas Stan Smith" required>
+                  <label for="img_url">Image Url</label>
+                  <input type="text" class="form-control" id="img_url" v-model="img_urlInput" placeholder="https://img.my-best.id/press_component/item_part_images/a9784919a998c8b61557bc422acdf173.jpg?ixlib=rails-4.2.0&auto=compress&q=70&lossless=0&w=640&h=640&fit=clip" required>
+                  <label for="price">Price</label>
+                  <input type="number" class="form-control" id="price" v-model="priceInput" min="1" placeholder="1499000000" required>
+                  <label for="stock">Stock</label>
+                  <input type="number" class="form-control" id="stock" v-model="stockInput" min="1" placeholder="10" required>
+                  <label for="category">Category</label>
+                  <input type="text" class="form-control" id="category" v-model="categoryInput" placeholder="Sepatu">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" @click.prevent="doAddProduct" data-dismiss="modal">Add Product</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+// @ is an alias to /src
+// import HelloWorld from '@/components/HelloWorld.vue'
+import axios from '@/axios/axios'
+import Navbar from '@/components/Navbar.vue'
+import ProductItem from '@/components/ProductItem.vue'
+export default {
+  name: 'Products',
+  data () {
+    return {
+      allItems: [],
+      nameInput: '',
+      img_urlInput: '',
+      priceInput: '',
+      stockInput: '',
+      categoryInput: ''
+    }
+  },
+  components: { Navbar, ProductItem },
+  methods: {
+    checkLocalStorage () {
+      if (!localStorage.access_token) {
+        this.$router.push({ name: 'Login' })
+      }
+    },
+    getAllProducts () {
+      axios.get('/products', {
+        headers: {
+          access_token: localStorage.access_token
+        }
+      }).then(response => {
+        this.allItems = response.data
+      }).catch(err => {
+        console.log(err.response.data)
+      })
+    },
+    doAddProduct () {
+      axios.post('/products', {
+        name: this.nameInput,
+        image_url: this.img_urlInput,
+        price: this.priceInput,
+        stock: this.stockInput
+      },
+      {
+        headers: {
+          access_token: localStorage.access_token
+        }
+      }).then(response => {
+        this.checkLocalStorage()
+        console.log(response.data)
+      }).catch(err => {
+        console.log(err.response.data)
+      }).then(() => {
+        this.nameInput = ''
+        this.img_urlInput = ''
+        this.priceInput = ''
+        this.stockInput = ''
+      })
+    }
+  },
+  created () {
+    this.checkLocalStorage()
+    this.getAllProducts()
+  }
+}
+</script>
+
+<style scoped>
+html * {
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background: #fff !important;
+}
+a {
+  color: #3e3947 !important;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #89229b !important;
+  text-decoration: none !important;
+}
+a:focus {
+  color: #89229b !important;
+  text-decoration: none !important;
+}
+.container h3 {
+  font-size: 25px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 300;
+  color: #3c4858;
+}
+.container h4 {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 10px 0;
+  font-weight: 300;
+  color: #3c4858;
+}
+
+small {
+  font-size: 75% !important;
+  color: #777;
+}
+
+.btn-group {
+  position: relative;
+  margin: 10px 1px;
+  display: inline-flex;
+  vertical-align: middle;
+}
+.btn-group .btn {
+  padding: 6.5px 20px !important;
+}
+.btn.btn-round {
+  border-radius: 30px !important;
+}
+
+.btn-group .btn.btn-round {
+  border-radius: 30px !important;
+}
+
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.btn-group > .btn:not(:first-child) {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.btn {
+  padding: 12px 30px !important;
+  margin: 5px 1px;
+  font-size: 12px !important;
+  box-shadow: 0 2px 2px 0 hsla(0, 0%, 60%, 0.14),
+    0 3px 1px -2px hsla(0, 0%, 60%, 0.2), 0 1px 5px 0 hsla(0, 0%, 60%, 0.12);
+}
+.btn .material-icons {
+  position: relative;
+  display: inline-block;
+  top: 0;
+  margin-top: -1.2em;
+  margin-bottom: -1em;
+  font-size: 1.1rem;
+  vertical-align: middle;
+}
+.btn.btn-sm {
+  border-radius: 3px !important;
+}
+
+.btn.btn-just-icon.btn-sm {
+  height: 30px;
+  min-width: 30px;
+  width: 30px;
+}
+
+.btn.btn-just-icon {
+  font-size: 24px;
+  height: 41px;
+  min-width: 41px;
+  width: 41px;
+  padding: 0 !important;
+  overflow: hidden;
+  position: relative;
+  line-height: 41px;
+}
+
+.btn.btn-just-icon.btn-round {
+  border-radius: 50% !important;
+}
+
+.btn.btn-link {
+  background: transparent;
+  box-shadow: none;
+  color: #999;
+}
+
+.btn.btn-info {
+  color: #fff !important;
+  background-color: #00bcd4 !important;
+  border-color: #00bcd4;
+  box-shadow: 0 2px 2px 0 rgba(0, 188, 212, 0.14),
+    0 3px 1px -2px rgba(0, 188, 212, 0.2), 0 1px 5px 0 rgba(0, 188, 212, 0.12) !important;
+}
+
+.btn.btn-info:hover {
+  box-shadow: 0 14px 26px -12px rgba(0, 188, 212, 0.42),
+    0 4px 23px 0 rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 188, 212, 0.2) !important;
+  background: #00aec5 !important;
+}
+
+.btn.btn-info.btn-link {
+  background-color: transparent !important;
+  color: #00bcd4 !important;
+  box-shadow: none !important;
+}
+.btn.btn-success {
+  color: #fff !important;
+  background-color: #4caf50 !important;
+  border-color: #4caf50;
+  box-shadow: 0 2px 2px 0 rgba(76, 175, 80, 0.14),
+    0 3px 1px -2px rgba(76, 175, 80, 0.2), 0 1px 5px 0 rgba(76, 175, 80, 0.12) !important;
+}
+
+.btn.btn-success:hover {
+  box-shadow: 0 14px 26px -12px rgba(76, 175, 80, 0.42),
+    0 4px 23px 0 rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(76, 175, 80, 0.2) !important;
+  background: #47a44b !important;
+}
+.btn.btn-success.btn-link {
+  background-color: transparent !important;
+  color: #4caf50 !important;
+  box-shadow: none !important;
+}
+
+.btn.btn-danger.btn-link {
+  background-color: transparent !important;
+  color: #f44336 !important;
+  box-shadow: none !important;
+}
+
+.btn.btn-just-icon.btn-sm .material-icons {
+  font-size: 17px;
+  line-height: 29px;
+}
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 16px;
+  background-color: transparent;
+}
+
+.table thead tr th {
+  font-size: 17px;
+  font-weight: 300;
+}
+
+.table > thead > tr > th {
+  padding: 12px 8px;
+  vertical-align: middle;
+  border-color: #ddd;
+  font-weight: 300;
+}
+
+.table > tbody > tr > td {
+  padding: 12px 8px;
+  vertical-align: middle;
+  border-color: #ddd;
+  font-weight: 300;
+  font-size: 14px;
+  color: #3c4858;
+}
+
+.table .td-actions .btn {
+  margin: 0;
+  padding: 5px;
+}
+
+.table .form-check {
+  margin: 0;
+  padding-left: 0;
+}
+
+.table .td-total {
+  font-weight: 500;
+  font-size: 17px;
+  padding-top: 20px;
+  text-align: right;
+}
+
+.table .td-price {
+  font-size: 26px;
+  font-weight: 300;
+  margin-top: 5px;
+  text-align: right;
+}
+.table-shopping > thead > tr > th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #555;
+}
+.table-shopping .td-name {
+  min-width: 200px;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.42857143;
+}
+
+.table-shopping .td-name small {
+  color: #999;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.table-shopping .img-container {
+  width: 120px;
+  max-height: 160px;
+  overflow: hidden;
+  display: block;
+}
+
+.table-shopping .img-container img {
+  width: 100%;
+}
+
+.table-shopping > tbody > tr > td {
+  font-size: 14px;
+}
+
+.table-shopping .td-number {
+  text-align: right;
+  min-width: 150px;
+  font-size: 18px;
+}
+
+.table-shopping .td-number small {
+  margin-right: 3px;
+}
+
+.table .form-check .form-check-sign {
+  top: -13px;
+  left: 0;
+  padding-right: 0;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9 !important;
+}
+
+/*animation*/
+
+@keyframes checkbox-on {
+  0% {
+    box-shadow: 0 0 0 10px, 10px -10px 0 10px, 32px 0 0 20px, 0px 32px 0 20px,
+      -5px 5px 0 10px, 15px 2px 0 11px;
+  }
+  50% {
+    box-shadow: 0 0 0 10px, 10px -10px 0 10px, 32px 0 0 20px, 0px 32px 0 20px,
+      -5px 5px 0 10px, 20px 2px 0 11px;
+  }
+  100% {
+    box-shadow: 0 0 0 10px, 10px -10px 0 10px, 32px 0 0 20px, 0px 32px 0 20px,
+      -5px 5px 0 10px, 20px -12px 0 11px;
+  }
+}
+
+</style>
