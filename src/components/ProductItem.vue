@@ -9,19 +9,52 @@
       </div>
     </td>
     <td class="td-name">
-      <p>{{item.name}}</p>
+      <p>{{ item.name }}</p>
     </td>
-    <td class="td-number text-center"><small>RP</small>{{item.price}}</td>
-    <td class="td-number text-center">{{item.stock}}</td>
+    <td class="td-number text-center">{{filteredPrice}}</td>
+    <td class="td-number text-center">{{item.stock}} <small>unit</small></td>
     <td class="td-number text-center">
       <div class="btn-group">
-        <button class="btn btn-round btn-info btn-sm">
+        <button class="btn btn-round btn-info btn-sm" @click.prevent="deleteItem">
           <i class="material-icons">remove</i>
         </button>
-        <button class="btn btn-round btn-info btn-sm">
+        <button class="btn btn-round btn-info btn-sm" data-toggle="modal" data-target="#modalBox" @click.prevent="showEditItem">
           <i class="material-icons">edit</i>
         </button>
       </div>
+        <div class="modal fade" id="modalBox" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-left">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="editName" v-model="showEditProduct.name" placeholder="Sepatu Adidas Stan Smith" required>
+                <label for="img_url">Image Url</label>
+                <input type="text" class="form-control" id="editImg_url" v-model="showEditProduct.image_url" placeholder="https://img.my-best.id/press_component/item_part_images/a9784919a998c8b61557bc422acdf173.jpg?ixlib=rails-4.2.0&auto=compress&q=70&lossless=0&w=640&h=640&fit=clip" required>
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="editPrice" v-model="showEditProduct.price" min="1" placeholder="1499000000" required>
+                <label for="stock">Stock</label>
+                <input type="number" class="form-control" id="editStock" v-model="showEditProduct.stock" min="1" placeholder="10" required>
+                <label for="category">Category</label>
+                <div class="form-group">
+                  <select class="form-control" v-model="showEditProduct">
+                    <option selected>{{ showEditProduct }}</option>
+                    <option v-for="eachCategory in filteredCategory" :key="eachCategory.id" :value="eachCategory.id">{{ eachCategory.name }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click.prevent="doEditItem" data-dismiss="modal">Edit Product</button>
+              </div>
+            </div>
+          </div>
+        </div>
     </td>
   </tr>
   <!-- <tr>
@@ -38,13 +71,63 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'Product Item',
   props: ['item'],
   data () {
     return {
-
+      nameInput: '',
+      img_urlInput: '',
+      priceInput: '',
+      stockInput: '',
+      categoryInput: ''
     }
+  },
+  methods: {
+    deleteItem () {
+      const id = this.item.id
+      console.log(id)
+      this.$store.dispatch('deleteProduct', id)
+    },
+    showEditItem () {
+      const id = this.item.id
+      console.log(id)
+      this.$store.dispatch('showEditProduct', id)
+      this.$store.dispatch('getAllCategory')
+    },
+    doEditItem () {
+      // const id = this.item.id
+      console.log(this.showEditProduct.id)
+      const payload = {
+        name: this.showEditProduct.name,
+        image_url: this.showEditProduct.img_url,
+        price: this.showEditProduct.price,
+        stock: this.showEditProduct.stock,
+        CategoryId: this.showEditProduct.CategoryId,
+        id: this.showEditProduct.id
+      }
+      this.$store.dispatch('editProduct', payload)
+    }
+  },
+  computed: {
+    filteredPrice () {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(this.item.price)
+    },
+    // cara kedua mengambul data dari state store
+    ...mapState({
+      showEditProduct: 'editedProduct',
+      allCategory: 'allCategory'
+    }),
+    filteredCategory () {
+      const result = this.allCategory.filter(e => {
+        return e.id !== this.item.CategoryId
+      })
+      return result
+    }
+  },
+  created () {
+    this.$store.dispatch('getAllCategory')
   }
 }
 </script>

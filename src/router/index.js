@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Products from '../views/Products.vue'
 import PageNotFound from '../views/404.vue'
+import AddProduct from '@/components/AddProduct'
 
 Vue.use(VueRouter)
 
@@ -19,7 +20,14 @@ const routes = [
   {
     path: '/products',
     name: 'Products',
-    component: Products
+    component: Products,
+    children: [
+      {
+        path: '/products/add',
+        name: 'AddProduct',
+        component: AddProduct
+      }
+    ]
   },
   {
     path: '/about',

@@ -5,11 +5,16 @@
       <div class="title">
         <h1>Products Admin</h1>
       </div>
+      <div class="col-md-12 mb-3">
+        <h4>Maintain Your Products Below</h4>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-success mx-auto w-25">
+        <i class="material-icons" @click.prevent="goToAddProduct">Add Product Here</i></button>
+      <router-view></router-view>
+      </div>
       <div class="row">
-        <div class="col-md-12 mb-3">
-          <h4>Maintain Your Products Below</h4>
-        </div>
-        <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto my-5">
           <div class="table-responsive">
             <table class="table table-shopping">
               <thead>
@@ -23,44 +28,11 @@
                 </tr>
               </thead>
               <tbody>
-                <ProductItem v-for="item in allItems" :key="item.id"
+                <ProductItem v-for="item in allProducts" :key="item.id"
                 :item = "item"
                 ></ProductItem>
               </tbody>
             </table>
-          </div>
-          <!-- Button trigger modal -->
-          <button class="btn btn-success mx-auto col-12"
-          data-toggle="modal" data-target="#modalBox">
-          <i class="material-icons">Add Product Here</i></button>
-          <!-- Modal -->
-          <div class="modal fade" id="modalBox" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body text-left">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" id="name" v-model="nameInput" placeholder="Sepatu Adidas Stan Smith" required>
-                  <label for="img_url">Image Url</label>
-                  <input type="text" class="form-control" id="img_url" v-model="img_urlInput" placeholder="https://img.my-best.id/press_component/item_part_images/a9784919a998c8b61557bc422acdf173.jpg?ixlib=rails-4.2.0&auto=compress&q=70&lossless=0&w=640&h=640&fit=clip" required>
-                  <label for="price">Price</label>
-                  <input type="number" class="form-control" id="price" v-model="priceInput" min="1" placeholder="1499000000" required>
-                  <label for="stock">Stock</label>
-                  <input type="number" class="form-control" id="stock" v-model="stockInput" min="1" placeholder="10" required>
-                  <label for="category">Category</label>
-                  <input type="text" class="form-control" id="category" v-model="categoryInput" placeholder="Sepatu">
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary" @click.prevent="doAddProduct" data-dismiss="modal">Add Product</button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -71,19 +43,13 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from '@/axios/axios'
 import Navbar from '@/components/Navbar.vue'
 import ProductItem from '@/components/ProductItem.vue'
 export default {
   name: 'Products',
   data () {
     return {
-      allItems: [],
-      nameInput: '',
-      img_urlInput: '',
-      priceInput: '',
-      stockInput: '',
-      categoryInput: ''
+      allItems: []
     }
   },
   components: { Navbar, ProductItem },
@@ -94,38 +60,17 @@ export default {
       }
     },
     getAllProducts () {
-      axios.get('/products', {
-        headers: {
-          access_token: localStorage.access_token
-        }
-      }).then(response => {
-        this.allItems = response.data
-      }).catch(err => {
-        console.log(err.response.data)
-      })
+      this.$store.dispatch('getAllProducts')
     },
-    doAddProduct () {
-      axios.post('/products', {
-        name: this.nameInput,
-        image_url: this.img_urlInput,
-        price: this.priceInput,
-        stock: this.stockInput
-      },
-      {
-        headers: {
-          access_token: localStorage.access_token
-        }
-      }).then(response => {
-        this.checkLocalStorage()
-        console.log(response.data)
-      }).catch(err => {
-        console.log(err.response.data)
-      }).then(() => {
-        this.nameInput = ''
-        this.img_urlInput = ''
-        this.priceInput = ''
-        this.stockInput = ''
-      })
+    goToAddProduct () {
+      this.$router.push('/products/add')
+    }
+  },
+  computed: {
+    // cara pertama mengambil data dari state store
+    allProducts () {
+      // store.state bukan function jadi tidak diinvoke
+      return this.$store.state.allProducts
     }
   },
   created () {
