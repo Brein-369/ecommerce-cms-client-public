@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import axios from '@/axios/axios'
 export default {
   name: 'login',
   data () {
@@ -47,16 +46,13 @@ export default {
     //   this.$router.push({ name: 'Register' })
     // }
     postLogin () {
-      axios.post('/login', {
+      console.log('masuk postlogin LOGIN')
+      const input = {
         email: this.emailInput,
         password: this.passwordInput
-      }).then(response => {
-        console.log(response.data)
-        localStorage.setItem('access_token', response.data.access_token)
-        this.$router.push({ name: 'Products' })
-      }).catch(err => {
-        console.log(err.response.data)
-      })
+      }
+      console.log(input)
+      this.$store.dispatch('postLogin', input)
     }
   }
 }

@@ -13,6 +13,8 @@
     </td>
     <td class="td-number text-center">{{filteredPrice}}</td>
     <td class="td-number text-center">{{item.stock}} <small>unit</small></td>
+    <!--kenapa return result di computed showCategoryName tidak bisa dikasi [0].name, bisanya ditaruh di template ?-->
+    <td class="td-number text-center">{{showCategoryName[0].name}}</td>
     <td class="td-number text-center">
       <div class="btn-group">
         <button class="btn btn-round btn-info btn-sm" @click.prevent="deleteItem">
@@ -42,10 +44,11 @@
                 <input type="number" class="form-control" id="editStock" v-model="showEditProduct.stock" min="1" placeholder="10" required>
                 <label for="category">Category</label>
                 <div class="form-group">
-                  <select class="form-control" v-model="showEditProduct">
-                    <option selected>{{ showEditProduct }}</option>
-                    <option v-for="eachCategory in filteredCategory" :key="eachCategory.id" :value="eachCategory.id">{{ eachCategory.name }}</option>
+
+                  <select class="form-control" v-model="showEditProduct.CategoryId">
+                    <option v-for="eachCategory in allCategory" :key="eachCategory.id" :value="eachCategory.id">{{ eachCategory.name }}</option>
                   </select>
+
                 </div>
               </div>
               <div class="modal-footer">
@@ -73,15 +76,11 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  name: 'Product Item',
+  name: 'ProductItem',
   props: ['item'],
   data () {
     return {
-      nameInput: '',
-      img_urlInput: '',
-      priceInput: '',
-      stockInput: '',
-      categoryInput: ''
+      CategoryName: this.showCategoryName
     }
   },
   methods: {
@@ -98,7 +97,7 @@ export default {
     },
     doEditItem () {
       // const id = this.item.id
-      console.log(this.showEditProduct.id)
+      console.log('categoryID', this.showEditProduct.CategoryId)
       const payload = {
         name: this.showEditProduct.name,
         image_url: this.showEditProduct.img_url,
@@ -119,12 +118,33 @@ export default {
       showEditProduct: 'editedProduct',
       allCategory: 'allCategory'
     }),
-    filteredCategory () {
-      const result = this.allCategory.filter(e => {
-        return e.id !== this.item.CategoryId
-      })
-      return result
+    showCategoryName () {
+      console.log(this.allCategory)
+      if (this.item.CategoryId) {
+        const result = this.allCategory.filter(e => {
+          return e.id === this.item.CategoryId
+        })
+        return result
+      } else {
+        return 'Category has not been set'
+      }
     }
+    // filteredCategory () {
+    //   const result = this.allCategory.filter(e => {
+    //     return e.id !== this.item.CategoryId
+    //   })
+    //   return result
+    // },
+    // showCategoryNameByItem () {
+    //   if (this.item.CategoryId) {
+    //     const result = this.allCategory.filter(e => {
+    //       return e.id === this.item.CategoryId
+    //     })
+    //     return result[0].name
+    //   } else {
+    //     return 'Category has not been set'
+    //   }
+    // }
   },
   created () {
     this.$store.dispatch('getAllCategory')

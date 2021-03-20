@@ -5,7 +5,12 @@
         >&times;</a
       >
       <router-link to="/products">Home</router-link>
-      <a href="#" @click.prevent="doLogout">Logout</a>
+      <a href="#" @click.prevent="doLogout">Logout</a><br><br><br>
+      <a href="#" @click.prevent="toCategories">Categories</a>
+      <!-- <a href="#" @click.prevent="doLogout">Sepatu</a>
+      <a href="#" @click.prevent="doLogout">Baju</a>
+      <a href="#" @click.prevent="doLogout">Elektronik</a>
+      <a href="#" @click.prevent="doLogout">Olahraga</a> -->
       <!-- <router-link to="/products" @click.prevent="doLogout">Logout</router-link> -->
     </div>
 
@@ -27,6 +32,9 @@ export default {
     doLogout () {
       localStorage.clear()
       this.$router.push({ name: 'Login' })
+    },
+    toCategories () {
+      this.$router.push('/categories')
     }
   }
 }

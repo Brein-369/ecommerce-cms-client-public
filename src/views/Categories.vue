@@ -1,16 +1,16 @@
 <template>
-  <div class="home">
+  <div class="Categories">
     <Navbar></Navbar>
     <div class="container">
       <div class="title">
-        <h1>Products Admin</h1>
+        <h1>Manage Categories</h1>
       </div>
       <div class="col-md-12 mb-3">
-        <h4>Maintain Your Products Below</h4>
+        <h3><small>*please note that if you delete a category, the product related will also be deleted</small></h3>
       </div>
       <div class="text-center">
         <button class="btn btn-success mx-auto w-25">
-        <i class="material-icons" @click.prevent="goToAddProduct">Add Product Here</i></button>
+        <i class="material-icons" @click.prevent="goToAddCategory">Add Category Here</i></button>
       <router-view></router-view>
       </div>
       <div class="row">
@@ -20,18 +20,15 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th class="text-center">Product</th>
-                  <th class="text-center">Price</th>
-                  <th class="text-center">Qty</th>
-                  <th class="text-center">Category</th>
+                  <th class="text-center">Category Name</th>
                   <th class="text-center">Action</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                <ProductItem v-for="item in allProducts" :key="item.id"
-                :item = "item"
-                ></ProductItem>
+                <CategoryItem v-for="eachCategory in allCategories" :key="eachCategory.id"
+                :eachCategory = "eachCategory"
+                ></CategoryItem>
               </tbody>
             </table>
           </div>
@@ -45,26 +42,26 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import Navbar from '@/components/Navbar.vue'
-import ProductItem from '@/components/ProductItem.vue'
+import CategoryItem from '@/components/CategoryItem.vue'
+import { mapState } from 'vuex'
 export default {
-  name: 'Products',
+  name: 'Categories',
   data () {
     return {
-      allItems: []
     }
   },
-  components: { Navbar, ProductItem },
+  components: { Navbar, CategoryItem },
   methods: {
     checkLocalStorage () {
       if (!localStorage.access_token) {
         this.$router.push({ name: 'Login' })
       }
     },
-    getAllProducts () {
-      this.$store.dispatch('getAllProducts')
+    getAllCategories () {
+      this.$store.dispatch('getAllCategory')
     },
-    goToAddProduct () {
-      this.$router.push('/products/add')
+    goToAddCategory () {
+      this.$router.push('/categories/add')
     }
   },
   computed: {
@@ -72,11 +69,14 @@ export default {
     allProducts () {
       // store.state bukan function jadi tidak diinvoke
       return this.$store.state.allProducts
-    }
+    },
+    ...mapState({
+      allCategories: 'allCategory'
+    })
   },
   created () {
     this.checkLocalStorage()
-    this.getAllProducts()
+    this.getAllCategories()
   }
 }
 </script>
