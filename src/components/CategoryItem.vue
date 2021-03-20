@@ -1,5 +1,7 @@
 <template>
   <tr>
+    <td>
+    </td>
     <td class="td-name">
       <p>{{ eachCategory.name }}</p>
     </td>

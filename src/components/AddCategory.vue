@@ -10,7 +10,7 @@
       </div>
       <div class="form-group text-center">
         <button type="button" class="btn btn-secondary mx-3" @click.prevent="goToCategories">Close</button>
-        <button type="button" class="btn btn-success mx-3" @click.prevent="doAddCategory">Add Product</button>
+        <button type="button" class="btn btn-success mx-3" @click.prevent="doAddCategory">Add Category</button>
       </div>
     </form>
   </div>
